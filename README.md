@@ -4,7 +4,14 @@ Der Bot soll dazu dienen, erste Funktionalitäten für den FitChat lokal laufen 
 
 ## Einrichtung
 
-Für die Einrichtung ist es nötig, eine `pipenv`-Umgebung einzurichten, mit der die `run.py` ausgeführt werden kann. Zudem muss auf der "Meta for Developers"-Plattform eine App erstellt werden. Der API-Key dieser App wird in die `.env` (siehe `example.env`) in `ACCESS_TOKEN` eingetragen. Auch andere Informationen wie die `APP_ID` sind hier notwendig. Anschließend muss ein Webhook erstellt werden. Der Secret-Key, der hier angegeben wird, muss mit dem in der `.env` übereinstimmen.
+Für die Einrichtung ist es nötig, eine `pipenv`-Umgebung einzurichten, mit der die `run.py` ausgeführt werden kann.
+
+```sh
+   pipenv shell
+   python3 run.py
+   ```
+
+Zudem muss auf der "Meta for Developers"-Plattform eine App erstellt werden. Der API-Key dieser App wird in die `.env` (siehe `example.env`) in `ACCESS_TOKEN` eingetragen. Auch andere Informationen wie die `APP_ID` sind hier notwendig. Anschließend muss ein Webhook erstellt werden. Der Secret-Key, der hier angegeben wird, muss mit dem in der `.env` übereinstimmen.
 
 ### Schritte zur Einrichtung
 
