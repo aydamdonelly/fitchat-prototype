@@ -70,7 +70,6 @@ def send_message(data):
     }
 
     url = f"https://graph.facebook.com/{VERSION}/{PHONE_NUMBER_ID}/messages"
-
     response = requests.post(url, data=data, headers=headers)
     if response.status_code == 200:
         print("Status:", response.status_code)
