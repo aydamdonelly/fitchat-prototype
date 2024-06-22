@@ -1,0 +1,7 @@
+flask
+python-dotenv
+openai
+aiohttp
+requests
+schedule
+time
