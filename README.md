@@ -1,15 +1,35 @@
-Okay, ich schick dir nach der Nachricht eine Repo mit meinen Inhalten bisher, kurzer Breakdown von dem was ich gemacht habe:
+# FitChat-Prototyp
 
-- alles eingerichtet bekommen, das Problem mit ngrok hat mich auch gut Zeit gekostet und ich bin mir ziemlich sicher, dass das Problem daran lag, dass die GET-Request die in der Repo vom Video definiert wurde, gar nicht ausgeführt werden konnte, da ngrok-Links von Meta als potentially malicious eingestuft werden und deswegen ein Zwischenschritt der Verifizierung durchgeführt werden muss, welcher über das Dashboard von Meta for Developers eben nicht umgangen werden kann. Aus dem Grund habe ich Serveo verwendet um das Ganze zu Testen, am Ende landet das ja sowieso soweit ich verstanden habe auf Vercel
-- Einen openai-Assistant mit PDF zu passenden Themen erstellt und gefüttert. Wahrscheinlich kennst du das schon, aber openai bietet an, assistants zu erstellen und in diesen Assistants Threads zu führen. Diese Threads dienen für uns individuell je nach Nutzer als Kontext und können in einem Datensatz zusammen mit Thread-ID Informationen wie "Tag" (für den Conversation flow aus dem google doc) oder "Schrittanzahl" (nach Tag) beinhalten.
-- Verbinden der WhatsApp API mit OpenAI bzw. dem Assistant, so bekommst du also antworten zu Fragen ggf. basierend auf der PDF als wissensbasis
-- regelmäßiges Abfragen der Schritte und Kalorien, das ist erstmal festgesetzter Text, ich plane da noch chatgpt zu verwenden, um die nachrichten ein wenig individuell zu machen und ggf. in den Kontext passen zu lassen, um's zu testen hab ich den Intervall erstmal auf 1 Minute gesetzt (whatsapp_utils.py unter app/utils)
+Der Bot soll dazu dienen, erste Funktionalitäten für den FitChat lokal laufen zu lassen und implementiert zu bekommen, sodass sie präsentierbar sind. Der Conversation Flow sowie das Speichern und Verarbeiten der Daten stehen hierbei im Vordergrund. Andere Funktionalitäten, wie das Verarbeiten mehrerer Nachrichten auf WhatsApp, die eigentlich eine Prompt losschicken sollen, folgen später.
 
-Was die nächsten Schritte wären:
-- Informationen pro Nutzer speichern (wie viele Schritte hat er getätigt, usw.)
-- Routine-Nachrichten (die in einem festen Zeitintervall, also bspw. jeden Abend versendet werden wie der Vorschlag mit Yazio-Download) festlegen
-- Prompt-Tunen, Nachrichten sind oft zu lang
-- Handling von mehreren Nachrichten eines Users, die eigentlich eine Anfrage an das LLM darstellen sollen
+## Einrichtung
 
-Offene Fragen:
-- benutzen wir OpenAI bzw. deren Assistant-Funktion, um bspw. RAG-Funktionalität einzubauen? Interessant dazu vielleicht das Video: https://www.youtube.com/watch?v=0h1ry-SqINc&t=1142s
+Für die Einrichtung ist es nötig, eine `pipenv`-Umgebung einzurichten, mit der die `run.py` ausgeführt werden kann. Zudem muss auf der "Meta for Developers"-Plattform eine App erstellt werden. Der API-Key dieser App wird in die `.env` (siehe `example.env`) in `ACCESS_TOKEN` eingetragen. Auch andere Informationen wie die `APP_ID` sind hier notwendig. Anschließend muss ein Webhook erstellt werden. Der Secret-Key, der hier angegeben wird, muss mit dem in der `.env` übereinstimmen.
+
+### Schritte zur Einrichtung
+
+1. **Erstellen einer Serveo-Adresse**
+   ```sh
+   ssh -R 80:localhost:8000 serveo.net
+   ```
+   Der angegebene Port bei Localhost muss mit dem in `run.py` übereinstimmen. Der Link, der dir hier ausgegeben wird, wird dann mit dem Suffix `/webhook` ergänzt. Nun kann die Webhook gespeichert werden.
+
+2. **Webhook-Fields konfigurieren**
+   Die Webhook-Fields dienen zur Verwaltung der abonnierten Webhooks. Dort kannst du unter dem "messages"-Field testen, ob die Webhook funktioniert, und anschließend ganz rechts das Kreuz setzen, um Nachrichten hier verarbeiten zu können.
+
+### Voraussetzungen
+
+- Aktive Webhook
+- Gestartete Flask-Applikation
+- Eingestellte `.env`-Datei
+
+Mit diesen Voraussetzungen sollte der Code funktionieren und fundierte Antworten auf Fitness-Fragen geben können.
+
+## Next Steps
+
+Hier eine unsortierte Auflistung der nächsten Schritte:
+
+- Erstellen eines Objekts mit nötigen Informationen, die danach in einer KV-Store gespeichert und abgerufen werden können.
+- Implementieren eines Kontexts als Ersatz der Thread-Funktionalität.
+- Abrufen des Objekts aus der KV-Store, um Berichte über Nährwerte zu erstellen.
+- Festlegen eines festen Konversationsflusses über mehrere Tage hinweg, abhängig vom Datum (aktuelles Datum - Datum der ersten Nachricht).
