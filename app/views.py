@@ -25,9 +25,9 @@ def handle_message():
 
     Returns:
         response: A tuple containing a JSON response and an HTTP status code.
-    """
+    """    
     body = request.get_json()
-    # logging.info(f"request body: {body}")
+    logging.info(f"request body: {body}")
 
     # Check if it's a WhatsApp status update
     if (
@@ -81,7 +81,7 @@ def verify():
 def webhook_get():
     return verify()
 
-@webhook_blueprint.route("/webhook", methods=["POST"])
+@webhook_blueprint.route("/webhooks", methods=["POST"])
 @signature_required
 def webhook_post():
     return handle_message()
