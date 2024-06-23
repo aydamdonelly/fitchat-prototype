@@ -9,18 +9,23 @@ Für die Einrichtung ist es nötig, eine `pipenv`-Umgebung einzurichten, mit der
 ```sh
    pipenv shell
    python3 run.py
-   ```
+```
 
 Zudem muss auf der "Meta for Developers"-Plattform eine App erstellt werden. Der API-Key dieser App wird in die `.env` (siehe `example.env`) in `ACCESS_TOKEN` eingetragen. Auch andere Informationen wie die `APP_ID` sind hier notwendig. Anschließend muss ein Webhook erstellt werden. Der Secret-Key, der hier angegeben wird, muss mit dem in der `.env` übereinstimmen.
 
 ### Schritte zur Einrichtung
 
 1. **Erstellen einer Serveo-Adresse**
+
    ```sh
    ssh -R 80:localhost:8000 serveo.net
    ```
-   Der angegebene Port bei Localhost muss mit dem in `run.py` übereinstimmen. Der Link, der dir hier ausgegeben wird, wird dann mit dem Suffix `/webhook` ergänzt. Nun kann die Webhook gespeichert werden.
 
+   Der angegebene Port bei Localhost muss mit dem in `run.py` übereinstimmen. Der Link, der dir hier ausgegeben wird, wird dann mit dem Suffix `/webhook` ergänzt. Nun kann die Webhook gespeichert werden. Serveo down? Alternativ kann auch http://localhost.run verwendet werden.
+
+   ```
+   ssh -R 80:localhost:8000 nokey@localhost.run
+   ```
 2. **Webhook-Fields konfigurieren**
    Die Webhook-Fields dienen zur Verwaltung der abonnierten Webhooks. Dort kannst du unter dem "messages"-Field testen, ob die Webhook funktioniert, und anschließend ganz rechts das Kreuz setzen, um Nachrichten hier verarbeiten zu können.
 
