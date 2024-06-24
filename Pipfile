@@ -10,6 +10,8 @@ openai = "*"
 aiohttp = "*"
 requests = "*"
 schedule = "*"
+langchain = "*"
+langchain-openai = "*"
 
 [dev-packages]
 
