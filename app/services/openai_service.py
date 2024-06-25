@@ -2,15 +2,31 @@ from openai import OpenAI
 import shelve
 from dotenv import load_dotenv
 from flask import current_app
+from langchain.output_parsers import PydanticOutputParser
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+from app.models import DailyProgress
 import os
 import time
 import logging
-
 load_dotenv()
+
+#openai client configuration
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_ASSISTANT_ID = os.getenv("OPENAI_ASSISTANT_ID")
 client = OpenAI(api_key=OPENAI_API_KEY)
+model = ChatOpenAI(api_key=OPENAI_API_KEY)
 
+#parser and prompt template setup
+output_parser = PydanticOutputParser(pydantic_object=DailyProgress)
+
+prompt = PromptTemplate(
+    template="Extract the metrics based on these instructions: \n{format_instructions}\n Those are the given information: {query}\n",
+    input_variables=["query"],
+    partial_variables={"format_instructions": output_parser.get_format_instructions()},
+)
+
+chain = prompt | model | output_parser
 
 def upload_file():
     # Upload a file with an "assistants" purpose
@@ -49,6 +65,9 @@ def check_if_thread_exists(wa_id):
     with shelve.open("threads_db") as threads_shelf:
         return threads_shelf.get(wa_id, None)
 
+def parse_message(message):
+    parsed_message = chain.invoke({"query": message})
+    return parsed_message
 
 def store_thread(wa_id, thread_id):
     with shelve.open("threads_db", writeback=True) as threads_shelf:

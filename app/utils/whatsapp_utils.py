@@ -1,16 +1,19 @@
 import logging
 from flask import current_app, jsonify, Flask
+from app.utils.vercel_kv import KV
 import json
 import requests
 import re
 import schedule
 import time
-from app.services.openai_service import generate_response, classify_message
+from app.services.openai_service import generate_response, classify_message, parse_message
 
 def log_http_response(response):
     logging.info(f"Status: {response.status_code}")
     logging.info(f"Content-type: {response.headers.get('content-type')}")
     logging.info(f"Body: {response.text}")
+
+kv = KV()
 
 def get_text_message_input(recipient, text):
     return json.dumps(
@@ -87,6 +90,8 @@ def process_whatsapp_message(body):
     if classification != "daily":
         response = generate_response(message_body, wa_id, name)
         response = process_text_for_whatsapp(response)
+        data = get_text_message_input(current_app.config["RECIPIENT_WAID"], response)
+        send_message(data)
     elif classification == "daily":
         recipient = current_app.config["RECIPIENT_WAID"]
         message_id = message["id"]
@@ -111,12 +116,19 @@ def process_whatsapp_message(body):
 
         reaction_response = requests.post(url, headers=headers, data=json.dumps(payload))
 
+        parsed_message = parse_message(message_body)
+
+        all_parsed_messages = []
+
+        all_parsed_messages.append(kv.get("+4917634309888"))
+
+        all_parsed_messages.append(parsed_message)
+
+        kv.set("+4917634309888", all_parsed_messages)
+
         # Log the reaction response
         print(reaction_response.status_code)
         print(reaction_response.json())
-
-    data = get_text_message_input(current_app.config["RECIPIENT_WAID"], response)
-    send_message(data)
 
 def is_valid_whatsapp_message(body):
     """
