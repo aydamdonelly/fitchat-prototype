@@ -57,7 +57,7 @@ def send_automated_message(app: Flask):
     
     with app.app_context():
         # Abrufen der JSON-Nachricht aus dem KV-Store
-        all_parsed_messages = kv.get("+4917634309888")
+        all_parsed_messages = kv.get(current_app.config["RECIPIENT_WAID"])
         
         if not all_parsed_messages:
             all_parsed_messages = {
@@ -137,7 +137,7 @@ def process_whatsapp_message(body):
     message_body = message["text"]["body"]
 
     if message_body == "Reset":
-        kv.set("+4917634309888", "")
+        kv.set(current_app.config["RECIPIENT_WAID"], "")
 
     # TODO: implement custom function here
     # response = generate_response(message_body)
@@ -176,7 +176,7 @@ def process_whatsapp_message(body):
 
         parsed_message = convert_to_json(str(parse_message(message_body)))
 
-        all_parsed_messages = kv.get("+4917634309888")
+        all_parsed_messages = kv.get(current_app.config["RECIPIENT_WAID"])
 
         if not all_parsed_messages:
             all_parsed_messages = {
@@ -210,7 +210,7 @@ def process_whatsapp_message(body):
         all_parsed_messages["current_day"] += 1
 
         #json.dumps is used to convert the dictionary to a string
-        kv.set("+4917634309888", json.dumps(all_parsed_messages))
+        kv.set(current_app.config["RECIPIENT_WAID"], json.dumps(all_parsed_messages))
 
         # Log the reaction response
         print(reaction_response.status_code)

@@ -10,7 +10,7 @@ import time
 def calculate_total_calories():
     kv = KV()
     # Fetch the stored data
-    all_parsed_messages = kv.get("+4917634309888")
+    all_parsed_messages = kv.get(current_app.config["RECIPIENT_WAID"])
     
     if not all_parsed_messages:
         return "Not enough data to calculate total calories."
