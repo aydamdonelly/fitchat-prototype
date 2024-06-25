@@ -116,15 +116,31 @@ def process_whatsapp_message(body):
 
         reaction_response = requests.post(url, headers=headers, data=json.dumps(payload))
 
-        parsed_message = parse_message(message_body)
+        parsed_message = convert_to_json(str(parse_message(message_body)))
 
-        all_parsed_messages = []
+        all_parsed_messages = kv.get("+4917634309888")
 
-        all_parsed_messages.append(kv.get("+4917634309888"))
+        if not all_parsed_messages:
+            all_parsed_messages = {
+                "progress": [],
+                "current_day": 1
+            }
+        else:
+            try:
+                # Versuch, den JSON-String zu dekodieren
+                all_parsed_messages = json.loads(all_parsed_messages)
+            except json.JSONDecodeError:
+                # Fehlerbehandlung, falls das Dekodieren fehlschlägt
+                all_parsed_messages = {
+                    "progress": [],
+                    "current_day": 1
+                }
 
-        all_parsed_messages.append(parsed_message)
+        all_parsed_messages["progress"].append(parsed_message)
+        all_parsed_messages["current_day"] += 1
 
-        kv.set("+4917634309888", all_parsed_messages)
+        #json.dumps is used to convert the dictionary to a string
+        kv.set("+4917634309888", json.dumps(all_parsed_messages))
 
         # Log the reaction response
         print(reaction_response.status_code)
@@ -142,6 +158,22 @@ def is_valid_whatsapp_message(body):
         and body["entry"][0]["changes"][0]["value"].get("messages")
         and body["entry"][0]["changes"][0]["value"]["messages"][0]
     )
+
+def convert_to_json(parsed_metrics):
+    data_dict = {}
+    for item in parsed_metrics.split():
+        key, value = item.split('=')
+        if value == 'None':
+            value = None
+        elif value.isdigit():
+            value = int(value)
+        else:
+            try:
+                value = float(value)
+            except ValueError:
+                pass
+        data_dict[key] = value
+    return data_dict
 
 # Aufgabenplanung konfigurieren
 def schedule_tasks(app: Flask):
