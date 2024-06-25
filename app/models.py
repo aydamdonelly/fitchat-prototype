@@ -8,4 +8,7 @@ class DailyProgress(BaseModel):
     calories: Optional[int] = Field(description="calories consumed today")
     steps: Optional[int] = Field(description="steps taken today")
     weight: Optional[float] = Field(description="weight in kg")
+    height: Optional[int] = Field(description="height in cm")
+    gender: Optional[str] = Field(description="gender of the user")
+    age: Optional[int] = Field(description="age of the user")
     protein: Optional[float] = Field(description="grams of protein consumed today")

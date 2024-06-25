@@ -60,6 +60,28 @@ def classify_message(message):
     generated_prompt = response.choices[0].message.content.strip()
     return generated_prompt
 
+def progress_rating(message):
+    response = client.chat.completions.create(model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You are an intelligent assistant. You greet the user and give him an evaluation of their progress in the last days. Don't list it, comment it and tell him how he is doing. Point out what he is doing well and what he is not doing well."},
+        {"role": "user", "content": f'You are an intelligent assistant. You greet the user and give him an evaluation of their progress in the last days Do not just list it, comment it and tell him how he is doing. Point out what he is doing well and what he is not doing well.: Here is a dataset of the progress of the user in the last days, give him an evaluation of their progress and comment on what they are doing well and what they are not doing well: {message}'}
+    ],
+    max_tokens=200,
+    temperature=0.9)
+    generated_prompt = response.choices[0].message.content.strip()
+    return generated_prompt
+
+def make_statistics(message):
+    response = client.chat.completions.create(model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You are an intelligent assistant. You greet the user and give him an evaluation of their progress in the last days by taking average values and commenting on them"},
+        {"role": "user", "content": f'You are an intelligent assistant. You greet the user and give him an evaluation of their progress in the last days by taking average values and commenting on them: Here is a dataset of the average progress of the user in the last days, give him an evaluation of their progress and comment on what they are doing well and what they are not doing well: {message}'}
+    ],
+    max_tokens=200,
+    temperature=0.9)
+    generated_prompt = response.choices[0].message.content.strip()
+    return generated_prompt
+
 # Use context manager to ensure the shelf file is closed properly
 def check_if_thread_exists(wa_id):
     with shelve.open("threads_db") as threads_shelf:
