@@ -5,7 +5,7 @@ import requests
 import re
 import schedule
 import time
-from app.services.openai_service import generate_response
+from app.services.openai_service import generate_response, classify_message
 
 def log_http_response(response):
     logging.info(f"Status: {response.status_code}")
@@ -34,7 +34,7 @@ def send_message(data):
         "Authorization": f"Bearer {current_app.config['ACCESS_TOKEN']}",
     }
 
-    url = f"https://graph.facebook.com/{current_app.config['VERSION']}/{current_app.config['PHONE_NUMBER_ID']}/messages"
+    url = f"https://graph.facebook.com/{current_app.config["VERSION"]}/{current_app.config["PHONE_NUMBER_ID"]}/messages"
 
     try:
         response = requests.post(
@@ -81,9 +81,39 @@ def process_whatsapp_message(body):
     # TODO: implement custom function here
     # response = generate_response(message_body)
 
+    classification = classify_message(message_body)
+
     # OpenAI Integration
-    response = generate_response(message_body, wa_id, name)
-    response = process_text_for_whatsapp(response)
+    if classification != "daily":
+        response = generate_response(message_body, wa_id, name)
+        response = process_text_for_whatsapp(response)
+    elif classification == "daily":
+        recipient = current_app.config["RECIPIENT_WAID"]
+        message_id = message["id"]
+        reaction_emoji = "\u270D"
+
+        url = f"https://graph.facebook.com/{current_app.config["VERSION"]}/{current_app.config["PHONE_NUMBER_ID"]}/messages"
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f"Bearer {current_app.config['ACCESS_TOKEN']}"
+        }
+
+        payload = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": current_app.config["RECIPIENT_WAID"],
+            "type": "reaction",
+            "reaction": {
+                "message_id": message_id,
+                "emoji": reaction_emoji
+            }
+        }
+
+        reaction_response = requests.post(url, headers=headers, data=json.dumps(payload))
+
+        # Log the reaction response
+        print(reaction_response.status_code)
+        print(reaction_response.json())
 
     data = get_text_message_input(current_app.config["RECIPIENT_WAID"], response)
     send_message(data)

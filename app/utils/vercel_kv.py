@@ -1,6 +1,7 @@
 import os
 from typing import Optional
 import requests
+from flask import current_app
 from dotenv import load_dotenv
 from pydantic import BaseModel
 
@@ -27,10 +28,10 @@ class KV:
     def __init__(self, kv_config: Optional[KVConfig] = None):
         if kv_config is None:
             self.kv_config = KVConfig(
-                url=os.getenv("KV_URL"),
-                rest_api_url=os.getenv("KV_REST_API_URL"),
-                rest_api_token=os.getenv("KV_REST_API_TOKEN"),
-                rest_api_read_only_token=os.getenv("KV_REST_API_READ_ONLY_TOKEN"),
+                url=current_app.config["KV_URL"],
+                rest_api_url=current_app.config["KV_REST_API_URL"],
+                rest_api_token=current_app.config["KV_REST_API_TOKEN"],
+                rest_api_read_only_token=current_app.config["KV_REST_API_READ_ONLY_TOKEN"],
             )
         else:
             self.kv_config = kv_config

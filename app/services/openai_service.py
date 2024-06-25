@@ -1,6 +1,7 @@
 from openai import OpenAI
 import shelve
 from dotenv import load_dotenv
+from flask import current_app
 import os
 import time
 import logging
@@ -32,6 +33,16 @@ def create_assistant(file):
     )
     return assistant
 
+def classify_message(message):
+    response = client.chat.completions.create(model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You are an intelligent assistant. You can only answer with one of the two following words: 'daily' and 'individual', nothing else."},
+        {"role": "user", "content": f'You are an intelligent assistant. You can only answer with one of the two following words: "daily" and "individual", nothing else. Your task is to identify whether the given message is a response to a regular activity prompt or a dynamic query.\n            If it\'s a response which provides information about fitness and health metrics of the user like steps or calories (something like \'I have consumed 2144 calories today and walked 12.000 steps\'), respond with "daily".\n If it\'s a dynamic query (something which doesn\'t provide information like mentioned in the regular case, such as a question about a topic related to health), simply respond with "individual".\n\n            MessageI have consumed 2144 calories today and walked 12.000 steps <-- daily. Here is the message you have to classify: {message}'}
+    ],
+    max_tokens=10,
+    temperature=0.9)
+    generated_prompt = response.choices[0].message.content.strip()
+    return generated_prompt
 
 # Use context manager to ensure the shelf file is closed properly
 def check_if_thread_exists(wa_id):
