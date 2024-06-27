@@ -1,15 +1,20 @@
-from openai import OpenAI
+# from openai import OpenAI
+from langfuse.openai import OpenAI
 import shelve
 from dotenv import load_dotenv
 from flask import current_app
 from langchain.output_parsers import PydanticOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
+from langfuse.callback import CallbackHandler
 from app.models import DailyProgress
 import os
 import time
 import logging
 load_dotenv()
+
+
+langfuse_handler = CallbackHandler()
 
 #openai client configuration
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -88,7 +93,7 @@ def check_if_thread_exists(wa_id):
         return threads_shelf.get(wa_id, None)
 
 def parse_message(message):
-    parsed_message = chain.invoke({"query": message})
+    parsed_message = chain.invoke({"query": message}, config={"callbacks": [langfuse_handler]})
     return parsed_message
 
 def store_thread(wa_id, thread_id):

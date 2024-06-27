@@ -1,4 +1,5 @@
-from openai import OpenAI
+from langfuse.openai import OpenAI
+# from openai import OpenAI
 import shelve
 from dotenv import load_dotenv
 import os
