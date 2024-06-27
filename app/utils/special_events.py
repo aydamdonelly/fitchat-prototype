@@ -45,7 +45,7 @@ def calculate_total_calories():
 def calculate_protein_intake():
     kv = KV()
     # Fetch the stored data
-    all_parsed_messages = kv.get("+4917634309888")
+    all_parsed_messages = kv.get(current_app.config["RECIPIENT_WAID"])
     
     if not all_parsed_messages:
         return "Not enough data to calculate protein intake."
@@ -67,7 +67,7 @@ def calculate_protein_intake():
 def process_progress():
     kv = KV()
     # Fetch the stored data
-    all_parsed_messages = kv.get("+4917634309888")
+    all_parsed_messages = kv.get(current_app.config["RECIPIENT_WAID"])
     
     if not all_parsed_messages:
         return "Not enough data to process progress."
@@ -93,7 +93,7 @@ def process_progress():
 def statistics_from_progress():
     kv = KV()
     # Fetch the stored data
-    all_parsed_messages = kv.get("+4917634309888")
+    all_parsed_messages = kv.get(current_app.config["RECIPIENT_WAID"])
     
     if not all_parsed_messages:
         return "Not enough data to calculate statistics."
