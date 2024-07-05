@@ -4,6 +4,8 @@ import requests
 from flask import current_app
 from dotenv import load_dotenv
 from pydantic import BaseModel
+import json
+from datetime import datetime
 
 load_dotenv()
 
@@ -48,19 +50,24 @@ class KV:
             return False
         return 'error' not in resp.json()
 
-    def set(self, key: str, value: str, opts: Optional[Opts] = None) -> bool:
+    def set(self, key: str, value: dict, opts: Optional[Opts] = None) -> bool:
         headers = {
             'Authorization': f'Bearer {self.kv_config.rest_api_token}',
+            'Content-Type': 'application/json'
         }
 
-        url = f'{self.kv_config.rest_api_url}/set/{key}/{value}'
+        url = f'{self.kv_config.rest_api_url}/set/{key}'
 
         if opts:
             params = opts.dict(exclude_none=True)
             for k, v in params.items():
                 url += f'/{k}/{v}'
 
-        resp = requests.post(url, headers=headers)
+        # Convert the value to JSON string using the custom encoder
+        payload = json.dumps(value, cls=CustomJSONEncoder)
+
+        # Send the data in the body of the POST request
+        resp = requests.post(url, headers=headers, data=payload)
         if resp.status_code == 200:
             return resp.json().get('result', False)
         return False
@@ -74,3 +81,10 @@ class KV:
         if resp.status_code == 200:
             return resp.json().get('result')
         return None
+
+# Custom JSON encoder for datetime objects
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super(CustomJSONEncoder, self).default(obj)
