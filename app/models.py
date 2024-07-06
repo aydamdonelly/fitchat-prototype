@@ -27,5 +27,5 @@ class User(BaseModel):
     paid: bool = Field(default=False, description="paid user")
     day: int = Field(default=0, description="day of the user")
     user_data: UserData = Field(default_factory=UserData, description="user data")
-    activity_log: Optional[DatedActivityLog] = Field(description="activity log")
+    activity_logs: list[DatedActivityLog] = Field(default_factory=list, description="activity log")
     messages: list[Message] = Field(default_factory=list, description="messages")
