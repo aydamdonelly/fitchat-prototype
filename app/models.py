@@ -15,8 +15,8 @@ class DatedActivityLog(ActivityLog):
     
 class UserData(BaseModel):
     first_name: Optional[str] = Field(description="name of the user")
-    age: Optional[str] = Field(description="age of the user")
-    gender: Optional[str] = Field(description="gender of the user")
+    age: Optional[int] = Field(description="age of the user")
+    gender: Optional[str] = Field(description="gender of the user, should be male or female")
     height: Optional[int] = Field(description="height in cm")
     
 class Message(BaseModel):
