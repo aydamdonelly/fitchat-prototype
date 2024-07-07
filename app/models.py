@@ -11,7 +11,7 @@ class ActivityLog(BaseModel):
     protein: Optional[float] = Field(description="Total grams of protein consumed today")
     
 class DatedActivityLog(ActivityLog):
-    date: str = Field(default_factory=lambda: datetime.now().strftime('%Y-%m-%d'), description="Date of the activity log in YYYY-MM-DD format")
+    date: datetime = Field()
     
 class UserData(BaseModel):
     first_name: Optional[str] = Field(description="name of the user")
@@ -20,12 +20,12 @@ class UserData(BaseModel):
     height: Optional[int] = Field(description="height in cm")
     
 class Message(BaseModel):
-    time: Optional[datetime] = Field(default_factory=datetime.now, description="time of the message")
-    base_message: BaseMessage = Field(description="message")
+    time: Optional[datetime] = Field(default_factory=datetime.now)
+    base_message: BaseMessage = Field()
         
 class User(BaseModel):
-    paid: bool = Field(default=False, description="paid user")
-    day: int = Field(default=0, description="day of the user")
-    user_data: UserData = Field(default_factory=UserData, description="user data")
-    activity_logs: list[DatedActivityLog] = Field(default_factory=list, description="activity log")
-    messages: list[Message] = Field(default_factory=list, description="messages")
+    paid: bool = Field(default=False)
+    day: int = Field(default=0, description="Used to track how many days the user has been using the app")
+    user_data: UserData = Field(default_factory=UserData)
+    dated_activity_logs: list[DatedActivityLog] = Field(default_factory=list)
+    messages: list[Message] = Field(default_factory=list)
